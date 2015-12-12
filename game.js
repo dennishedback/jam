@@ -26,7 +26,7 @@ var GrisRunner = {
         this.vel = this.vel.add(this.acc);
         // Add current vertical velocity to vertical position
         this.pos.y += this.vel.y;
-        console.log(this.pos.y);
+        console.log(this.acc.y);
     },
 
     accelerate: function(accel_vector) {
@@ -37,8 +37,17 @@ var GrisRunner = {
         console.log("jump");
         if (this.state == GrisRunnerStates.DEFAULT) {
             this.state = GrisRunnerStates.JUMPING;
-            this.vel.y += -12;  // Negative is up
+            this.vel.y -= 15;  // Negative is up
             this.acc.y = .5;
+        }
+    },
+
+    stopJump: function() {
+        console.log("stop jump");
+        if (this.state == GrisRunnerStates.JUMPING) {
+            this.state = GrisRunnerStates.DEFAULT;
+            this.vel.y = 0;
+            this.acc.y = 0;
         }
     },
 };
@@ -100,13 +109,15 @@ $(document).ready(function() {
         terrainBuffer = [],
         grisrunner = GrisRunner.create(),
         noise = Perlin1D(),
-        highestPointBelowGrisRunner = 0;
+        highestPointBelowGrisRunner = 0,
+        previousHighestPointBelowGrisRunner = 0;
 
     init();
     run();
 
-    $("#canvas").click(function() {
+    $(window).click(function() {
         grisrunner.jump();
+        console.log("hej");
     });
 
     function init() {
@@ -142,6 +153,7 @@ $(document).ready(function() {
         }
 
         updateTerrain();
+        grisrunner.pos.y += highestPointBelowGrisRunner - previousHighestPointBelowGrisRunner;
         grisrunner.update();
         handleCollisions();
     };
@@ -150,11 +162,16 @@ $(document).ready(function() {
         for (var i = 0; i < grisrunner.vel.x; i++) {
             terrainBuffer.shift();
         }
+        previousHighestPointBelowGrisRunner = highestPointBelowGrisRunner;
         highestPointBelowGrisRunner = terrainBuffer[(width / 2) + (grisrunner.sprite.width / 2)];
+        //console.log(highestPointBelowGrisRunner);
     };
 
     function handleCollisions() {
-
+        if (grisrunner.state == GrisRunnerStates.JUMPING && grisrunner.pos.y > highestPointBelowGrisRunner) {
+            grisrunner.pos.y = highestPointBelowGrisRunner;
+            grisrunner.stopJump();
+        }
     };
 
     function render() {
@@ -166,7 +183,7 @@ $(document).ready(function() {
     function drawTerrain() {
         for (var i = 0; i < width; i++) {
             context.beginPath();
-            context.moveTo(i, height/2+grisrunner.sprite.height+terrainBuffer[i]-highestPointBelowGrisRunner-grisrunner.pos.y);
+            context.moveTo(i, height/2+grisrunner.sprite.height+terrainBuffer[i]-grisrunner.pos.y);
             context.lineTo(i, height);
             context.stroke();
         }
