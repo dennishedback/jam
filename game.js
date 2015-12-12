@@ -1,12 +1,20 @@
-var GameEntity = {
+var GrisRunnerStates = {
+    DEFAULT: "default",
+    JUMPING: "jumping",
+};
+
+var GrisRunner = {
     pos: null,
     vel: null,
+    acc: null,
     sprite: null,
+    state: GrisRunnerStates.DEFAULT,
 
     create: function() {
         var obj = Object.create(this);
         obj.pos = new Victor(0, 0);
         obj.vel = new Victor(0, 0);
+        obj.acc = new Victor(0, 0);
         obj.sprite = new Image();
         return obj;
     },
@@ -16,7 +24,22 @@ var GameEntity = {
     },
 
     update: function() {
+        // Add current acceleration to velocity
+        this.vel = this.vel.add(this.acc);
+        // Add current vertical velocity to vertical position
+        this.pos.y += this.vel.y;
+    },
 
+    accelerate: function(accel_vector) {
+        this.acc = this.acc.add(accel_vector);
+    },
+
+    jump: function() {
+        if (this.state == GrisRunnerStates.DEFAULT) {
+            this.state = GrisRunnerStates.JUMPING;
+            this.vel.y += -10;  // Negative is up
+            this.acc.y = .5;
+        }
     },
 };
 
@@ -31,17 +54,22 @@ $(document).ready(function() {
         height = canvas.height = $(window).height(),
         colors = ["#ffffff", "#000000"],
         terrainBuffer = [],
-        grisrunner = GameEntity.create();
+        portionOfTerrainBelowGrisRunner = [],
+        grisrunner = GrisRunner.create();
 
     init();
     run();
 
+    $("#canvas").click(function() {
+        grisrunner.jump();
+    });
+
     function init() {
+        grisrunner.pos.x = width / 2;
+        grisrunner.pos.y = height / 2;
         grisrunner.vel.x = 5;
         grisrunner.sprite.src = "assets/grisrunner.png";
 
-        // 0,0 is the position of the grisrunner
-        //context.translate(0, height - 50);
         context.fillStyle = colors[1];
     };
 
@@ -74,14 +102,19 @@ $(document).ready(function() {
         if (needToGenerateMoreTerrain()) {
             generateTerrain();
         }
+
         updateTerrain();
         grisrunner.update();
+        handleCollisions();
     };
 
     function updateTerrain() {
         for (var i = 0; i < grisrunner.vel.x; i++) {
             terrainBuffer.shift();
         }
+    };
+
+    function handleCollisions() {
     };
 
     function render() {
