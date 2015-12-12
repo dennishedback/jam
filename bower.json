@@ -1,0 +1,18 @@
+{
+  "name": "jam",
+  "authors": [
+    "dawik & dennishedback"
+  ],
+  "description": "",
+  "main": "game.js",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
