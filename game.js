@@ -20,7 +20,7 @@ $(document).ready(function() {
         width = canvas.width = $(window).width(),
         height = canvas.height = $(window).height(),
         colors = ["#ffffff", "#000000"],
-        terrain = [],
+        terrainBuffer = [],
         terrainInViewport = [],
         grisrunner = GameEntity.create();
 
@@ -28,11 +28,11 @@ $(document).ready(function() {
     run();
 
     function init() {
-        randomTerrain(); // For testing purposes
+        randomterrainBuffer(); // For testing purposes
 
         // Initial terrain in viewport
         for (var i = 0; i < width; i++) {
-            terrainInViewport.push(terrain.shift());
+            terrainInViewport.push(terrainBuffer.shift());
         }
 
         grisrunner.vel.x = 5;
@@ -42,10 +42,10 @@ $(document).ready(function() {
         context.fillStyle = colors[1];
     };
 
-    function randomTerrain() {
+    function randomterrainBuffer() {
         for (var i = 0; i < 30000; i++) {
             var height = randomInRange(5,10);
-            terrain.push(height);
+            terrainBuffer.push(height);
         }
     };
 
@@ -60,16 +60,23 @@ $(document).ready(function() {
         // Here, we generate the terrain
     };
 
+    function needToGenerateMoreTerrain() {
+        // Here, we determine if we need to add more terrain to the terrain
+        // buffer
+        return false;
+    }
+
     function update() {
-        // Update all game entities
-        generateTerrain();
+        if (needToGenerateMoreTerrain()) {
+            generateTerrain();
+        }
         updateTerrain();
     };
 
     function updateTerrain() {
         for (var i = 0; i < grisrunner.vel.x; i++) {
             terrainInViewport.shift();
-            terrainInViewport.push(terrain.shift());
+            terrainInViewport.push(terrainBuffer.shift());
         }
     };
 
