@@ -25,8 +25,7 @@ var GrisRunner = {
         // Add current acceleration to velocity
         this.vel = this.vel.add(this.acc);
         // Add current vertical velocity to vertical position
-        this.pos.y += this.vel.y;
-        console.log(this.acc.y);
+        this.pos = this.pos.add(this.vel);
     },
 
     accelerate: function(accel_vector) {
@@ -34,7 +33,6 @@ var GrisRunner = {
     },
 
     jump: function() {
-        console.log("jump");
         if (this.state == GrisRunnerStates.DEFAULT) {
             this.state = GrisRunnerStates.JUMPING;
             this.vel.y -= 15;  // Negative is up
@@ -43,7 +41,6 @@ var GrisRunner = {
     },
 
     stopJump: function() {
-        console.log("stop jump");
         if (this.state == GrisRunnerStates.JUMPING) {
             this.state = GrisRunnerStates.DEFAULT;
             this.vel.y = 0;
@@ -115,9 +112,8 @@ $(document).ready(function() {
     init();
     run();
 
-    $(window).click(function() {
+    $("#canvas").click(function() {
         grisrunner.jump();
-        console.log("hej");
     });
 
     function init() {
@@ -133,8 +129,14 @@ $(document).ready(function() {
         requestAnimationFrame(run);
     };
 
+    function stairsTerrain(factor) {
+        for (var i = 0; i < 10; i++)
+            for (var j = 0; j < 2200; j++)
+                terrainBuffer.push(i*factor*200);
+    }
+
     function generateTerrain() {
-        // Here, we generate the terrain
+        // Generates procedural terrain with perlin noise
 		var distance = 1000.0, step = 0.01;
 		for (var d = 0.0; d < distance; d = d + step) {
 			terrainBuffer.push(noise.getVal(d + 5));
@@ -149,7 +151,8 @@ $(document).ready(function() {
 
     function update() {
         if (needToGenerateMoreTerrain()) {
-            generateTerrain();
+            stairsTerrain(-1);
+            //generateTerrain();
         }
 
         updateTerrain();
