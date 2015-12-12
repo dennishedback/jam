@@ -13,9 +13,11 @@ var GrisRunner = {
     create: function() {
         var obj = Object.create(this);
         obj.pos = new Victor(0, 0);
-        obj.vel = new Victor(0, 0);
+        obj.vel = new Victor(10, 0);
         obj.acc = new Victor(0, 0);
         obj.sprite = new Image();
+        obj.sprite.src = "assets/grisrunner.png";
+
         return obj;
     },
 
@@ -24,6 +26,7 @@ var GrisRunner = {
         this.vel = this.vel.add(this.acc);
         // Add current vertical velocity to vertical position
         this.pos.y += this.vel.y;
+        console.log(this.pos.y);
     },
 
     accelerate: function(accel_vector) {
@@ -31,9 +34,10 @@ var GrisRunner = {
     },
 
     jump: function() {
+        console.log("jump");
         if (this.state == GrisRunnerStates.DEFAULT) {
             this.state = GrisRunnerStates.JUMPING;
-            this.vel.y += -10;  // Negative is up
+            this.vel.y += -12;  // Negative is up
             this.acc.y = .5;
         }
     },
@@ -106,11 +110,6 @@ $(document).ready(function() {
     });
 
     function init() {
-        grisrunner.pos.x = width / 2;
-        grisrunner.pos.y = height / 2;
-        grisrunner.vel.x = 5;
-        grisrunner.sprite.src = "assets/grisrunner.png";
-
 		noise.setAmplitude(10);
 		noise.setScale(2);
         context.fillStyle = colors[1];
@@ -167,7 +166,7 @@ $(document).ready(function() {
     function drawTerrain() {
         for (var i = 0; i < width; i++) {
             context.beginPath();
-            context.moveTo(i, height/2+grisrunner.sprite.height+terrainBuffer[i]-highestPointBelowGrisRunner);
+            context.moveTo(i, height/2+grisrunner.sprite.height+terrainBuffer[i]-highestPointBelowGrisRunner-grisrunner.pos.y);
             context.lineTo(i, height);
             context.stroke();
         }
