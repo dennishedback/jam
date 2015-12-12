@@ -24,6 +24,50 @@ function randomInRange(min, max) {
     return Math.floor(Math.random() * max) - 1;
 };
 
+function Perlin1D() {
+	var MAX_VERTICES = 256;
+	var MAX_VERTICES_MASK = MAX_VERTICES -1;
+	var amplitude = 1;
+	var scale = 1;
+
+	var r = [];
+
+	for ( var i = 0; i < MAX_VERTICES; ++i ) {
+		r.push(Math.random());
+	}
+
+	var getVal = function( x ){
+		var scaledX = x * scale;
+		var xFloor = Math.floor(scaledX);
+		var t = scaledX - xFloor;
+		var tRemapSmoothstep = t * t * ( 3 - 2 * t );
+
+		/// Modulo using &
+		var xMin = xFloor & MAX_VERTICES_MASK;
+		var xMax = ( xMin + 1 ) & MAX_VERTICES_MASK;
+
+		var y = lerp( r[ xMin ], r[ xMax ], tRemapSmoothstep );
+
+		return y * amplitude;
+	};
+
+	var lerp = function(a, b, t ) {
+		return a * ( 1 - t ) + b * t;
+	};
+
+	return {
+		getVal: getVal,
+		setAmplitude: function(newAmplitude) {
+			amplitude = newAmplitude;
+		},
+		setScale: function(newScale) {
+			scale = newScale;
+		}
+	};
+};
+
+
+
 $(document).ready(function() {
     var canvas = $("#canvas").get(0),
         context = canvas.getContext("2d"),
@@ -31,7 +75,8 @@ $(document).ready(function() {
         height = canvas.height = $(window).height(),
         colors = ["#ffffff", "#000000"],
         terrainBuffer = [],
-        grisrunner = GameEntity.create();
+        grisrunner = GameEntity.create(),
+		noise = Perlin1D();
 
     init();
     run();
@@ -39,6 +84,9 @@ $(document).ready(function() {
     function init() {
         grisrunner.vel.x = 5;
         grisrunner.sprite.src = "assets/grisrunner.png";
+
+		noise.setAmplitude(10);
+		noise.setScale(2);
 
         // 0,0 is the position of the grisrunner
         //context.translate(0, height - 50);
@@ -58,10 +106,11 @@ $(document).ready(function() {
     };
 
     function randomTerrainBuffer() {
-        for (var i = 0; i < 30000; i++) {
-            var height = randomInRange(5,10);
-            terrainBuffer.push(height);
-        }
+		var distance = 1000.0, step = 0.01;
+		for (var d = 0.0; d < distance; d = d + step) {
+			terrainBuffer.push(noise.getVal(d + 5));
+		}
+
     };
 
     function needToGenerateMoreTerrain() {
