@@ -19,10 +19,6 @@ var GrisRunner = {
         return obj;
     },
 
-    draw: function(context) {
-        context.drawImage(this.sprite, this.pos.x, this.pos.y);
-    },
-
     update: function() {
         // Add current acceleration to velocity
         this.vel = this.vel.add(this.acc);
@@ -99,7 +95,8 @@ $(document).ready(function() {
         colors = ["#ffffff", "#000000"],
         terrainBuffer = [],
         grisrunner = GrisRunner.create(),
-        noise = Perlin1D();
+        noise = Perlin1D(),
+        highestPointBelowGrisRunner = 0;
 
     init();
     run();
@@ -128,15 +125,10 @@ $(document).ready(function() {
 
     function generateTerrain() {
         // Here, we generate the terrain
-        randomTerrainBuffer(); // For testing purposes
-    };
-
-    function randomTerrainBuffer() {
 		var distance = 1000.0, step = 0.01;
 		for (var d = 0.0; d < distance; d = d + step) {
 			terrainBuffer.push(noise.getVal(d + 5));
 		}
-
     };
 
     function needToGenerateMoreTerrain() {
@@ -159,21 +151,23 @@ $(document).ready(function() {
         for (var i = 0; i < grisrunner.vel.x; i++) {
             terrainBuffer.shift();
         }
+        highestPointBelowGrisRunner = terrainBuffer[(width / 2) + (grisrunner.sprite.width / 2)];
     };
 
     function handleCollisions() {
+
     };
 
     function render() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         drawTerrain();
-        grisrunner.draw(context);
+        context.drawImage(grisrunner.sprite, width / 2, height / 2);
     };
 
     function drawTerrain() {
         for (var i = 0; i < width; i++) {
             context.beginPath();
-            context.moveTo(i, height-50+terrainBuffer[i]);
+            context.moveTo(i, height/2+grisrunner.sprite.height+terrainBuffer[i]-highestPointBelowGrisRunner);
             context.lineTo(i, height);
             context.stroke();
         }
