@@ -101,10 +101,10 @@ Game.Play.prototype =
 	graphics.beginFill(0x000000);
 	graphics.lineStyle(0, 0xffd900, 1);
 
+	graphics.moveTo(distance, 200);
 	terrain.forEach(function(vertex) {
 		graphics.lineTo(vertex[0], vertex[1]);
 	});
-	graphics.lineTo(distance, 200);
 
 	graphics.endFill();
 
