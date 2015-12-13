@@ -10,10 +10,10 @@ var GrisRunner = {
     sprite: null,
     state: GrisRunnerStates.DEFAULT,
 
-    create: function() {
+    create: function(x, y) {
         var obj = Object.create(this);
-        obj.pos = new Victor(0, 0);
-        obj.vel = new Victor(10, 0);
+        obj.pos = new Victor(x, y);
+        obj.vel = new Victor(10, 0); // 10 pixels per frame to the right
         obj.acc = new Victor(0, 0);
         obj.sprite = new Image();
         obj.sprite.src = "assets/grisrunner.png";
@@ -21,11 +21,12 @@ var GrisRunner = {
         return obj;
     },
 
-    update: function() {
+    update: function(terrainBuffer) {
         // Add current acceleration to velocity
         this.vel = this.vel.add(this.acc);
         // Add current vertical velocity to vertical position
         this.pos = this.pos.add(this.vel);
+        this.hasFootHold(terrainBuffer);
     },
 
     accelerate: function(accel_vector) {
@@ -36,16 +37,23 @@ var GrisRunner = {
         if (this.state == GrisRunnerStates.DEFAULT) {
             this.state = GrisRunnerStates.JUMPING;
             this.vel.y -= 15;  // Negative is up
-            this.acc.y = .5;
         }
     },
 
-    stopJump: function() {
-        if (this.state == GrisRunnerStates.JUMPING) {
-            this.state = GrisRunnerStates.DEFAULT;
-            this.vel.y = 0;
-            this.acc.y = 0;
+    hasFootHold: function(terrainBuffer) {
+        var offset = this.pos.y + this.sprite.height;
+        for (var i = this.pos.x; i < this.pos.x + this.sprite.width; i++) {
+            if (offset > terrainBuffer[i]) {
+                this.acc.y = 0;
+                this.pos.y = terrainBuffer[i]-this.sprite.height;
+            } else {
+                this.acc.y = .5;
+            }
         }
+    },
+
+    draw: function(context, viewport) {
+        context.drawImage(this.sprite, this.pos.x - viewport.pos.x, this.pos.y - viewport.pos.y);
     },
 };
 
@@ -102,9 +110,10 @@ $(document).ready(function() {
         context = canvas.getContext("2d"),
         width = canvas.width = $(window).width(),
         height = canvas.height = $(window).height(),
+        viewport = {pos: new Victor(0,0), wl: new Victor(width, height)},
         colors = ["#ffffff", "#000000"],
         terrainBuffer = [],
-        grisrunner = GrisRunner.create(),
+        grisrunner = GrisRunner.create(0, 0),
         noise = Perlin1D(),
         highestPointBelowGrisRunner = 0,
         previousHighestPointBelowGrisRunner = 0;
@@ -139,7 +148,7 @@ $(document).ready(function() {
         // Generates procedural terrain with perlin noise
 		var distance = 1000.0, step = 0.01;
 		for (var d = 0.0; d < distance; d = d + step) {
-			terrainBuffer.push(noise.getVal(d + 5));
+			terrainBuffer.push(noise.getVal(d + 5) + height/2+100);
 		}
     };
 
@@ -151,42 +160,37 @@ $(document).ready(function() {
 
     function update() {
         if (needToGenerateMoreTerrain()) {
-            stairsTerrain(-1);
-            //generateTerrain();
+            //stairsTerrain(-1);
+            generateTerrain();
         }
 
         updateTerrain();
-        grisrunner.pos.y += highestPointBelowGrisRunner - previousHighestPointBelowGrisRunner;
-        grisrunner.update();
+        grisrunner.update(terrainBuffer);
         handleCollisions();
     };
 
     function updateTerrain() {
+        /*
         for (var i = 0; i < grisrunner.vel.x; i++) {
             terrainBuffer.shift();
-        }
-        previousHighestPointBelowGrisRunner = highestPointBelowGrisRunner;
-        highestPointBelowGrisRunner = terrainBuffer[(width / 2) + (grisrunner.sprite.width / 2)];
-        //console.log(highestPointBelowGrisRunner);
+        }*/
     };
 
     function handleCollisions() {
-        if (grisrunner.state == GrisRunnerStates.JUMPING && grisrunner.pos.y > highestPointBelowGrisRunner) {
-            grisrunner.pos.y = highestPointBelowGrisRunner;
-            grisrunner.stopJump();
-        }
     };
 
     function render() {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        //viewport.pos.x = grisrunner.pos.x - viewport.wl.x / 2;
+        //viewport.pos.y = grisrunner.pos.y - viewport.wl.y / 2;
         drawTerrain();
-        context.drawImage(grisrunner.sprite, width / 2, height / 2);
+        grisrunner.draw(context, viewport);
     };
 
     function drawTerrain() {
         for (var i = 0; i < width; i++) {
             context.beginPath();
-            context.moveTo(i, height/2+grisrunner.sprite.height+terrainBuffer[i]-grisrunner.pos.y);
+            context.moveTo(i, terrainBuffer[i]);
             context.lineTo(i, height);
             context.stroke();
         }
