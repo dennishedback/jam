@@ -4,7 +4,7 @@ Game.Intro = function(){};
 Game.Menu = function(){};
 Game.Play = function(){};
 
-Game.Intro.prototype = 
+Game.Intro.prototype =
 {
   preload: function()
   {
@@ -18,7 +18,7 @@ Game.Intro.prototype =
     //this.load.audio('intro', '../assets/intro.mp3');
   },
 
-  create: function() 
+  create: function()
   {
     this.game.stage.backgroundColor = '#ffffff';
     var pixelate = game.add.filter('Pixelate');
@@ -63,7 +63,7 @@ Game.Intro.prototype =
 
 var playing = false;
 
-Game.Play.prototype = 
+Game.Play.prototype =
 {
   preload: function()
   {
@@ -78,7 +78,7 @@ Game.Play.prototype =
     //this.load.audio('pcp', '../assets/pcp.mp3');
   },
 
-  create: function() 
+  create: function()
   {
     this.loading_text.destroy(true);
     this.game.camera.roundPx = false;
@@ -131,7 +131,7 @@ Game.Play.prototype =
 	*/
   },
 
-  shutdown: function() 
+  shutdown: function()
   {
     /*
     shake = new Phaser.Plugin.Shake(game);
