@@ -98,8 +98,7 @@ Game.Play.prototype =
 	console.log("WAT", terrain);
 	var graphics = game.add.graphics(distance, 330);
 
-	graphics.beginFill(0x000000);
-	graphics.lineStyle(0, 0xffd900, 1);
+	graphics.beginFill(0x666666);
 
 	graphics.moveTo(distance, 200);
 	terrain.forEach(function(vertex) {
@@ -225,7 +224,7 @@ Game.Play.prototype =
   {
 	  if (this.player.body)
 	  {
-		  console.log(this.player.position);
+		  //console.log(this.player.position);
 		  //player movement
 		  //this.player.body.velocity.y = 0;
 		  //this.player.body.velocity.x = 0;
