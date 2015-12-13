@@ -29,9 +29,9 @@ Game.Intro.prototype =
     pixelate.sizeY = 100;
     var tween = game.add.tween(pixelate).to( { sizeX: 1, sizeY: 1 }, 5000, "Quad.easeInOut", true)
     tween.onComplete.add(function(){
-      var text = this.game.add.text(game.world.centerX, 150, "The objective is to run as far as possible\n While eating food to grow fat and fart to gain\nextra speed\n",  {fill: "#ffffff", align:"center"});
+      var text = this.game.add.text(game.world.centerX, 158, "The objective is to run as far as possible\n Press SPACE to start",  {fill: "#000000", align:"center"});
       text.anchor.setTo(0.5);
-      text.alpha = 0.1;
+      text.alpha = 1.0;
     });
 
     //intro_track = this.game.add.audio('intro');
