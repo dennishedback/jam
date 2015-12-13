@@ -73,7 +73,7 @@ Game.Play.prototype =
     this.scale.pageAlignVertically = true;
     game.stage.smoothed = false;
 
-    this.load.image('grisrunner', 'assets/grisrunner.png');
+    this.load.image('grisrunner', 'assets/grisrunner_normal_run_1.png');
     //this.load.audio('splash2', '../assets/splash2.mp3');
     //this.load.audio('pcp', '../assets/pcp.mp3');
   },
