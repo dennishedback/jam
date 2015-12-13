@@ -44,6 +44,8 @@ function Perlin1D() {
 
 Game = {};
 
+var terrain;
+
 Game.Intro = function(){};
 Game.Menu = function(){};
 Game.Play = function(){};
@@ -152,16 +154,16 @@ Game.Play.prototype =
     //this.player.animations.add('back', ['iceman-back-1.png', 'iceman-back-2.png'], 5, true);
     //this.player.animations.add('front', ['iceman-front-1.png', 'iceman-front-2.png'], 5, true);
     //this.player.animations.play('front');
-	this.game.physics.p2.enableBody(this.player,true);
+	this.game.physics.p2.enableBody(this.player,false);
 
 	//this.line = new Phaser.Line(0, 100, 100, 200);
 	this.line = game.add.sprite(0, 330, 'empty');
-	this.game.physics.p2.enableBody(this.line,true);
+	this.game.physics.p2.enableBody(this.line,false);
 	this.line.body.clearShapes();
 	//this.line.body.mass = 0;
 	this.line.body.static = true;
 
-	var terrain = [[0, 100]];
+	terrain = [[0, 100]];
 	var noise = Perlin1D();
 	noise.setAmplitude(20);
 	noise.setScale(1);
@@ -174,7 +176,7 @@ Game.Play.prototype =
 	}
 	terrain.push([500, 100]);
 	console.log("WAT", terrain);
-	this.line.body.addPolygon( {}, terrain);
+	var t2 = terrain.concat();
 	//this.line.body.addLine( 100, 0, 0, 0);
 	//this.line.body.addRectangle( 100, 10, 0, 0, 0);
 
@@ -197,25 +199,42 @@ Game.Play.prototype =
 
     game.sound.setDecodedCallback(pcp, start, this);
 	*/
+	var graphics = game.add.graphics(0, 330);
+
+    // set a fill and line style
+    graphics.beginFill(0xFF3300);
+    graphics.lineStyle(0, 0xffd900, 1);
+
+	terrain.forEach(function(vertex) {
+		graphics.lineTo(vertex[0], vertex[1]);
+	});
+	graphics.lineTo(0, 200);
+
+	// draw a shape
+	graphics.endFill();
+
+
+	window.graphics = graphics;
+	this.line.body.addPolygon( {}, t2);
   },
 
   shutdown: function()
   {
-    /*
-    shake = new Phaser.Plugin.Shake(game);
-    game.plugins.add(shake);
-    */
+	  /*
+		 shake = new Phaser.Plugin.Shake(game);
+		 game.plugins.add(shake);
+		 */
 
-    this.splash.destroy(true);
-    this.map.destroy(true);
-    this.backgroundLayer.destroy(true);
-    //this.blockedLayer.destroy(true);
-    //this.world.destroy(true);
-    tankers.destroy(true);
-    text.destroy(true);
-    this.player.destroy(true);
-    StandingInWaterFilter.destroy(true);
-    //pcp.destroy(true);
+	  this.splash.destroy(true);
+	  this.map.destroy(true);
+	  this.backgroundLayer.destroy(true);
+	  //this.blockedLayer.destroy(true);
+	  //this.world.destroy(true);
+	  tankers.destroy(true);
+	  text.destroy(true);
+	  this.player.destroy(true);
+	  StandingInWaterFilter.destroy(true);
+	  //pcp.destroy(true);
   },
 
   update: function()
@@ -227,16 +246,16 @@ Game.Play.prototype =
 		  //this.player.body.velocity.x = 0;
 
 		  if(this.cursors.up.isDown) {
-			  this.player.body.velocity.y -= 250;
+			  this.player.body.velocity.y -= 50;
 		  }
 		  else if(this.cursors.down.isDown) {
-			  this.player.body.velocity.y += 250;
+			  this.player.body.velocity.y += 50;
 		  }
 		  if(this.cursors.left.isDown) {
-			  this.player.body.velocity.x -= 250;
+			  this.player.body.velocity.x -= 50;
 		  }
 		  else if(this.cursors.right.isDown) {
-			  this.player.body.velocity.x += 250;
+			  this.player.body.velocity.x += 50;
 		  }
 
 		  if(this.cursors.up.isDown) {
@@ -262,7 +281,7 @@ Game.Play.prototype =
 
   render: function()
   {
-	this.game.debug.geom(this.line);
+	  this.game.debug.geom(this.line);
   }
 }
 
@@ -363,19 +382,19 @@ $(document).ready(function() {
 	   };
 
 	   function run() {
-// Game loop
-update();
-render();
-requestAnimationFrame(run);
-};
+		// Game loop
+		update();
+		render();
+		requestAnimationFrame(run);
+		};
 
-function stairsTerrain(factor) {
-for (var i = 0; i < 10; i++)
-for (var j = 0; j < 2200; j++)
-terrainBuffer.push(i*factor*200);
-}
+		function stairsTerrain(factor) {
+		for (var i = 0; i < 10; i++)
+		for (var j = 0; j < 2200; j++)
+		terrainBuffer.push(i*factor*200);
+		}
 
-function generateTerrain() {
+		function generateTerrain() {
 		// Generates procedural terrain with perlin noise
 		var distance = 1000.0, step = 0.01;
 		for (var d = 0.0; d < distance; d = d + step) {
@@ -384,37 +403,37 @@ function generateTerrain() {
 		};
 
 		function needToGenerateMoreTerrain() {
-		// Here, we determine if we need to add more terrain to the terrain
-		// buffer
-		return terrainBuffer.length < 3*width;
-		}
+	// Here, we determine if we need to add more terrain to the terrain
+	// buffer
+	return terrainBuffer.length < 3*width;
+	}
 
-		function update() {
-		if (needToGenerateMoreTerrain()) {
-		//stairsTerrain(-1);
-		generateTerrain();
-		}
+	function update() {
+	if (needToGenerateMoreTerrain()) {
+				//stairsTerrain(-1);
+				generateTerrain();
+				}
 
-		updateTerrain();
-		grisrunner.update(terrainBuffer);
-		handleCollisions();
-		};
+				updateTerrain();
+				grisrunner.update(terrainBuffer);
+				handleCollisions();
+				};
 
-		function updateTerrain() {
-		//for (var i = 0; i < grisrunner.vel.x; i++) {
-		//terrainBuffer.shift();
-		};
+				function updateTerrain() {
+//for (var i = 0; i < grisrunner.vel.x; i++) {
+//terrainBuffer.shift();
+};
 
-		function handleCollisions() {
-		};
+function handleCollisions() {
+};
 
-	function render() {
-		context.clearRect(0, 0, canvas.width, canvas.height);
-		//viewport.pos.x = grisrunner.pos.x - viewport.wl.x / 2;
-		//viewport.pos.y = grisrunner.pos.y - viewport.wl.y / 2;
-		drawTerrain();
-		grisrunner.draw(context, viewport);
-	};
+function render() {
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	//viewport.pos.x = grisrunner.pos.x - viewport.wl.x / 2;
+	//viewport.pos.y = grisrunner.pos.y - viewport.wl.y / 2;
+	drawTerrain();
+	grisrunner.draw(context, viewport);
+};
 
 function drawTerrain() {
 	for (var i = 0; i < width; i++) {
