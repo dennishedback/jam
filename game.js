@@ -81,20 +81,20 @@ Game.Play.prototype =
   genTerrain: function(distance)
   {
 	this.terrainSegment.push(game.add.sprite(distance, 330, 'empty'));
-	this.game.physics.p2.enableBody(this.terrainSegment[this.terrainSegment.length - 1],true);
+	this.game.physics.p2.enableBody(this.terrainSegment[this.terrainSegment.length - 1],false);
 	this.terrainSegment[this.terrainSegment.length - 1].body.clearShapes();
 	this.terrainSegment[this.terrainSegment.length - 1].body.static = true;
 
-	var terrain = [[distance, 100]];
+	var terrain = [[0, 100]];
 	this.noise.setAmplitude(20);
-	this.noise.setScale(1);
-	for (var i = distance/50.0; i <= (distance/50.0) + 10.0; i = i+1.0)
+	this.noise.setScale(50);
+	for (var i = 0; i <= 0 + 500.0; i = i+50.0)
 	{
-		var height = this.noise.getVal(i);
-		var x = i * 50.0;
+		var height = this.noise.getVal(distance + i);
+		var x = i;
 		terrain.push([x, -height]);
 	}
-	terrain.push([distance + 500, 100]);
+	terrain.push([500, 100]);
 	console.log("WAT", terrain);
 	var graphics = game.add.graphics(distance, 330);
 
@@ -199,6 +199,7 @@ Game.Play.prototype =
 	  this.genTerrain(1000);
 	  this.genTerrain(1500);
 	  this.genTerrain(2000);
+	  this.genTerrain(2500);
   },
 
   shutdown: function()
