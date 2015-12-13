@@ -110,6 +110,16 @@ Game.Play.prototype =
     //this.player.animations.play('front');
 	this.game.physics.p2.enableBody(this.player,true);
 
+	//this.line = new Phaser.Line(0, 100, 100, 200);
+	this.line = game.add.sprite(100, 50, 'empty');
+	this.game.physics.p2.enableBody(this.line,true);
+	this.line.body.clearShapes();
+	//this.line.body.mass = 0;
+
+	//	You can specify the addition of a new polygon to a body in 3 different ways:
+
+	this.line.body.addPolygon( {} ,    10, 191  ,  20, 158  ,  30, 186  ,  40, 204  );
+
     //this.player.body.collideWorldBounds = true;
 
     //the camera will follow the player in the world
@@ -155,8 +165,8 @@ Game.Play.prototype =
 	  if (this.player.body)
 	  {
 		  //player movement
-		  this.player.body.velocity.y = 0;
-		  this.player.body.velocity.x = 0;
+		  //this.player.body.velocity.y = 0;
+		  //this.player.body.velocity.x = 0;
 
 		  if(this.cursors.up.isDown) {
 			  this.player.body.velocity.y -= 250;
@@ -190,6 +200,11 @@ Game.Play.prototype =
 			 this.game.physics.arcade.collide(icebergs, tankers, tanker_collision_callback, null, this);
 			 */
 	  }
+  },
+
+  render: function()
+  {
+	this.game.debug.geom(this.line);
   }
 }
 
