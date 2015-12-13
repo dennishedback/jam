@@ -86,8 +86,8 @@ Game.Play.prototype =
 	this.terrainSegment[this.terrainSegment.length - 1].body.static = true;
 
 	var terrain = [[0, 100]];
-	this.noise.setAmplitude(20);
-	this.noise.setScale(50);
+	this.noise.setAmplitude(100);
+	this.noise.setScale(0.01);
 	for (var i = 0; i <= 0 + 500.0; i = i+50.0)
 	{
 		var height = this.noise.getVal(distance + i);
@@ -118,7 +118,7 @@ Game.Play.prototype =
     this.game.camera.roundPx = false;
     this.game.stage.backgroundColor = '#ffffff';
     this.game.physics.startSystem(Phaser.Physics.P2JS);
-	this.game.physics.p2.gravity.y = 500;
+	this.game.physics.p2.gravity.y = 1500;
 	this.terrainSegment = [];
 
 	//this.splash = this.add.audio('splash2');
