@@ -111,14 +111,15 @@ Game.Play.prototype =
 	this.game.physics.p2.enableBody(this.player,true);
 
 	//this.line = new Phaser.Line(0, 100, 100, 200);
-	this.line = game.add.sprite(100, 50, 'empty');
+	this.line = game.add.sprite(334, 200, 'empty');
 	this.game.physics.p2.enableBody(this.line,true);
 	this.line.body.clearShapes();
 	//this.line.body.mass = 0;
+	this.line.body.static = true;
 
-	//	You can specify the addition of a new polygon to a body in 3 different ways:
-
-	this.line.body.addPolygon( {} ,    10, 191  ,  20, 158  ,  30, 186  ,  40, 204  );
+	//this.line.body.addPolygon( {} ,    10, 191  ,  20, 158  ,  30, 186  ,  40, 204  );
+	//this.line.body.addLine( 100, 0, 0, 0);
+	this.line.body.addRectangle( 100, 10, 0, 0, 0);
 
     //this.player.body.collideWorldBounds = true;
 
