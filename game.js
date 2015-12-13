@@ -139,7 +139,7 @@ Game.Play.prototype =
     //console.log(this.backgroundLayer);
     //this.backgroundLayer.worldScale(0.25);
     //this.blockedLayer = this.map.createLayer('blockedLayer');
-    //this.world.setBounds(0,0,this.map.widthInPixels, this.map.heightInPixels);
+    this.world.setBounds(0,0,10000, 400);
 
     //this.map.setCollisionBetween(1, 100000, true, this.blockedLayer);
 
@@ -202,7 +202,7 @@ Game.Play.prototype =
 	var graphics = game.add.graphics(0, 330);
 
     // set a fill and line style
-    graphics.beginFill(0xFF3300);
+    graphics.beginFill(0x000000);
     graphics.lineStyle(0, 0xffd900, 1);
 
 	terrain.forEach(function(vertex) {
