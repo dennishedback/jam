@@ -81,9 +81,10 @@ Game.Play.prototype =
   create: function() 
   {
     this.loading_text.destroy(true);
-    //game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.camera.roundPx = false;
+    this.game.camera.roundPx = false;
     this.game.stage.backgroundColor = '#ffffff';
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+	this.game.physics.p2.gravity.y = 500;
 
     //this.splash = this.add.audio('splash2');
 
@@ -107,7 +108,7 @@ Game.Play.prototype =
     //this.player.animations.add('back', ['iceman-back-1.png', 'iceman-back-2.png'], 5, true);
     //this.player.animations.add('front', ['iceman-front-1.png', 'iceman-front-2.png'], 5, true);
     //this.player.animations.play('front');
-    this.game.physics.arcade.enable(this.player);
+	this.game.physics.p2.enableBody(this.player,true);
 
     //this.player.body.collideWorldBounds = true;
 
