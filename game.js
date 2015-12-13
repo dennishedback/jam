@@ -1,3 +1,47 @@
+function Perlin1D() {
+	var MAX_VERTICES = 256;
+	var MAX_VERTICES_MASK = MAX_VERTICES -1;
+	var amplitude = 1;
+	var scale = 1;
+
+	var r = [];
+
+	for ( var i = 0; i < MAX_VERTICES; ++i ) {
+		r.push(Math.random());
+	}
+
+	var getVal = function( x ){
+		var scaledX = x * scale;
+		var xFloor = Math.floor(scaledX);
+		var t = scaledX - xFloor;
+		var tRemapSmoothstep = t * t * ( 3 - 2 * t );
+
+		/// Modulo using &
+		var xMin = xFloor & MAX_VERTICES_MASK;
+		var xMax = ( xMin + 1 ) & MAX_VERTICES_MASK;
+
+		var y = lerp( r[ xMin ], r[ xMax ], tRemapSmoothstep );
+
+		return y * amplitude;
+	};
+
+	var lerp = function(a, b, t ) {
+		return a * ( 1 - t ) + b * t;
+	};
+
+	return {
+		getVal: getVal,
+		setAmplitude: function(newAmplitude) {
+			amplitude = newAmplitude;
+		},
+		setScale: function(newScale) {
+			scale = newScale;
+		}
+	};
+};
+
+
+
 Game = {};
 
 Game.Intro = function(){};
@@ -117,7 +161,20 @@ Game.Play.prototype =
 	//this.line.body.mass = 0;
 	this.line.body.static = true;
 
-	this.line.body.addPolygon( {optimalDecomp: true, skipSimpleCheck:true, removeCollinearPoints: true}, [[0,100], [100,20], [200, 10], [300, 100]]);
+	var terrain = [[0, 100]];
+	var noise = Perlin1D();
+	noise.setAmplitude(20);
+	noise.setScale(1);
+	for (var i = 0.0; i <= 10.0; i = i+1.0)
+	{
+		var height = noise.getVal(i);
+		var x = i * 50.0;
+		terrain.push([x, -height]);
+		//console.log("Height", height, "i", i, terrain);
+	}
+	terrain.push([500, 100]);
+	console.log("WAT", terrain);
+	this.line.body.addPolygon( {}, terrain);
 	//this.line.body.addLine( 100, 0, 0, 0);
 	//this.line.body.addRectangle( 100, 10, 0, 0, 0);
 
@@ -277,50 +334,6 @@ var GrisRunner = {
 function randomInRange(min, max) {
 	return Math.floor(Math.random() * max) - 1;
 };
-
-function Perlin1D() {
-	var MAX_VERTICES = 256;
-	var MAX_VERTICES_MASK = MAX_VERTICES -1;
-	var amplitude = 1;
-	var scale = 1;
-
-	var r = [];
-
-	for ( var i = 0; i < MAX_VERTICES; ++i ) {
-		r.push(Math.random());
-	}
-
-	var getVal = function( x ){
-		var scaledX = x * scale;
-		var xFloor = Math.floor(scaledX);
-		var t = scaledX - xFloor;
-		var tRemapSmoothstep = t * t * ( 3 - 2 * t );
-
-		/// Modulo using &
-		var xMin = xFloor & MAX_VERTICES_MASK;
-		var xMax = ( xMin + 1 ) & MAX_VERTICES_MASK;
-
-		var y = lerp( r[ xMin ], r[ xMax ], tRemapSmoothstep );
-
-		return y * amplitude;
-	};
-
-	var lerp = function(a, b, t ) {
-		return a * ( 1 - t ) + b * t;
-	};
-
-	return {
-		getVal: getVal,
-		setAmplitude: function(newAmplitude) {
-			amplitude = newAmplitude;
-		},
-		setScale: function(newScale) {
-			scale = newScale;
-		}
-	};
-};
-
-
 
 $(document).ready(function() {
 	/*
