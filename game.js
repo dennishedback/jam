@@ -111,15 +111,15 @@ Game.Play.prototype =
 	this.game.physics.p2.enableBody(this.player,true);
 
 	//this.line = new Phaser.Line(0, 100, 100, 200);
-	this.line = game.add.sprite(334, 200, 'empty');
+	this.line = game.add.sprite(0, 330, 'empty');
 	this.game.physics.p2.enableBody(this.line,true);
 	this.line.body.clearShapes();
 	//this.line.body.mass = 0;
 	this.line.body.static = true;
 
-	//this.line.body.addPolygon( {} ,    10, 191  ,  20, 158  ,  30, 186  ,  40, 204  );
+	this.line.body.addPolygon( {optimalDecomp: true, skipSimpleCheck:true, removeCollinearPoints: true}, [[0,100], [100,20], [200, 10], [300, 100]]);
 	//this.line.body.addLine( 100, 0, 0, 0);
-	this.line.body.addRectangle( 100, 10, 0, 0, 0);
+	//this.line.body.addRectangle( 100, 10, 0, 0, 0);
 
     //this.player.body.collideWorldBounds = true;
 
