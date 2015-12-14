@@ -133,7 +133,6 @@ Game.Play.prototype =
         }
 
         terrain.push([500, 100]);
-        console.log("WAT", terrain);
         var graphics = game.add.graphics(distance, 330);
 
         graphics.lineWidth = 0;
@@ -158,6 +157,7 @@ Game.Play.prototype =
         this.game.stage.backgroundColor = '#ffffff';
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.game.physics.p2.gravity.y = 1500;
+		this.generatedTerrain = 0;
 
         // Prevents menu popping up on mouse2 down
         this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
@@ -238,12 +238,7 @@ Game.Play.prototype =
 
            game.sound.setDecodedCallback(pcp, start, this);
         */
-        this.genTerrain(0);
-        this.genTerrain(500);
-        this.genTerrain(1000);
-        this.genTerrain(1500);
-        this.genTerrain(2000);
-        this.genTerrain(2500);
+		this.genTerrain(0);
     },
 
     shutdown: function()
@@ -282,52 +277,22 @@ Game.Play.prototype =
             if (this.input.activePointer.rightButton.isDown) {
                 this.player.body.velocity.x += 100;
             }
-            //console.log(this.player.position);
-            //player movement
-            //this.player.body.velocity.y = 0;
-            //this.player.body.velocity.x = 0;
-
-            /*
-
-            if(this.cursors.up.isDown) {
-                this.player.body.velocity.y -= 50;
-            }
-            else if(this.cursors.down.isDown) {
-                this.player.body.velocity.y += 50;
-            }
-            if(this.cursors.left.isDown) {
-                this.player.body.velocity.x -= 50;
-            }
-            else if(this.cursors.right.isDown) {
-                this.player.body.velocity.x += 50;
-            }
-
-            if(this.cursors.up.isDown) {
-                this.player.animations.play('back');
-            }
-            else if(this.cursors.down.isDown) {
-                this.player.animations.play('front');
-            }
-            else if(this.cursors.left.isDown) {
-                this.player.animations.play('left');
-            }
-            else if(this.cursors.right.isDown) {
-                this.player.animations.play('right');
-            }
-            */
-            /*
-             this.game.physics.arcade.collide(this.player, tankers);
-             this.game.physics.arcade.collide(this.player, icebergs);
-             this.game.physics.arcade.collide(icebergs, icebergs);
-             this.game.physics.arcade.collide(icebergs, tankers, tanker_collision_callback, null, this);
-             */
         }
-    },
+		if (this.generatedTerrain - this.player.position.x < 500) {
+			this.generatedTerrain += 500;
+			this.genTerrain(this.generatedTerrain);
+			if (this.terrainSegment.length > 3)
+			{
+				this.terrainSegment[0].destroy();
+				this.terrainSegment.shift();
+			}
+		}
+	},
 
-    render: function()
-    {
-        this.game.debug.geom(this.line);
-    }
+	render: function()
+	{
+		this.game.debug.geom(this.line);
+	}
 }
 
 var game = new Phaser.Game(640, 400, Phaser.AUTO, '', Game.Intro);
