@@ -26,7 +26,10 @@ Game.Intro.prototype =
             'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Pixelate.js'
         );
 
-    //this.load.audio('intro', '../assets/intro.mp3');
+        this.load.audio('jump', './assets/jump.wav');
+        this.load.audio('fart', './assets/fart.wav');
+        this.load.audio('pickup', './assets/pickup_food.wav');
+        this.load.audio('crash', './assets/crash.wav');
     },
 
     create: function()
@@ -272,10 +275,12 @@ Game.Play.prototype =
 
             if (this.input.activePointer.leftButton.isDown) {
                 this.player.body.velocity.y -= 100;
+                this.game.sound.play("jump");
             }
 
             if (this.input.activePointer.rightButton.isDown) {
                 this.player.body.velocity.x += 100;
+                this.game.sound.play("fart");
             }
         }
 		if (this.generatedTerrain - this.player.position.x < 500) {
