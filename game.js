@@ -158,6 +158,10 @@ Game.Play.prototype =
         this.game.stage.backgroundColor = '#ffffff';
         this.game.physics.startSystem(Phaser.Physics.P2JS);
         this.game.physics.p2.gravity.y = 1500;
+
+        // Prevents menu popping up on mouse2 down
+        this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
+
         this.terrainSegment = [];
 
         //this.splash = this.add.audio('splash2');
@@ -216,7 +220,7 @@ Game.Play.prototype =
         //this.player.animations.add('back', ['iceman-back-1.png', 'iceman-back-2.png'], 5, true);
         //this.player.animations.add('front', ['iceman-front-1.png', 'iceman-front-2.png'], 5, true);
         //this.player.animations.play('front');
-        this.game.physics.p2.enableBody(this.player,false);
+        this.game.physics.p2.enableBody(this.player, false);
 
         this.game.camera.follow(this.player);
 
@@ -263,11 +267,27 @@ Game.Play.prototype =
 
     update: function()
     {
+        const BASE_VELOCITY = 400;
+
         if (this.player.body) {
+
+            if (this.player.body.velocity.x < 400) {
+                this.player.body.velocity.x = 400;
+            }
+
+            if (this.input.activePointer.leftButton.isDown) {
+                this.player.body.velocity.y -= 100;
+            }
+
+            if (this.input.activePointer.rightButton.isDown) {
+                this.player.body.velocity.x += 100;
+            }
             //console.log(this.player.position);
             //player movement
             //this.player.body.velocity.y = 0;
             //this.player.body.velocity.x = 0;
+
+            /*
 
             if(this.cursors.up.isDown) {
                 this.player.body.velocity.y -= 50;
@@ -294,6 +314,7 @@ Game.Play.prototype =
             else if(this.cursors.right.isDown) {
                 this.player.animations.play('right');
             }
+            */
             /*
              this.game.physics.arcade.collide(this.player, tankers);
              this.game.physics.arcade.collide(this.player, icebergs);
