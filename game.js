@@ -267,12 +267,10 @@ Game.Play.prototype =
 
     update: function()
     {
-        const BASE_VELOCITY = 400;
-
         if (this.player.body) {
 
-            if (this.player.body.velocity.x < BASE_VELOCITY) {
-                this.player.body.velocity.x = BASE_VECLOTIY;
+            if (this.player.body.velocity.x < 400) {
+                this.player.body.velocity.x = 400;
             }
 
             if (this.input.activePointer.leftButton.isDown) {
