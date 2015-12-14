@@ -1,0 +1,108 @@
+{"frames": {
+
+"food.png":
+{
+	"frame": {"x":2,"y":2,"w":14,"h":22},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":14,"h":22},
+	"sourceSize": {"w":14,"h":22}
+},
+"grisrunner_fat_fart.png":
+{
+	"frame": {"x":18,"y":2,"w":44,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":30},
+	"sourceSize": {"w":44,"h":30}
+},
+"grisrunner_fat_run_1.png":
+{
+	"frame": {"x":64,"y":2,"w":44,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":30},
+	"sourceSize": {"w":44,"h":30}
+},
+"grisrunner_fat_run_2.png":
+{
+	"frame": {"x":2,"y":34,"w":44,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":30},
+	"sourceSize": {"w":44,"h":30}
+},
+"grisrunner_normal_fart.png":
+{
+	"frame": {"x":48,"y":34,"w":44,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":30},
+	"sourceSize": {"w":44,"h":30}
+},
+"grisrunner_normal_run_1.png":
+{
+	"frame": {"x":2,"y":66,"w":44,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":30},
+	"sourceSize": {"w":44,"h":30}
+},
+"grisrunner_normal_run_2.png":
+{
+	"frame": {"x":48,"y":66,"w":44,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":30},
+	"sourceSize": {"w":44,"h":30}
+},
+"obstacle_barrel.png":
+{
+	"frame": {"x":94,"y":66,"w":24,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":24,"h":32},
+	"sourceSize": {"w":24,"h":32}
+},
+"obstacle_haystack.png":
+{
+	"frame": {"x":2,"y":100,"w":48,"h":42},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":42},
+	"sourceSize": {"w":48,"h":42}
+},
+"obstacle_manure.png":
+{
+	"frame": {"x":52,"y":100,"w":38,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":38,"h":26},
+	"sourceSize": {"w":38,"h":26}
+},
+"obstacle_tractor.png":
+{
+	"frame": {"x":2,"y":144,"w":68,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":68,"h":44},
+	"sourceSize": {"w":68,"h":44}
+},
+"obstacle_tree.png":
+{
+	"frame": {"x":72,"y":144,"w":40,"h":60},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":60},
+	"sourceSize": {"w":40,"h":60}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "grisrunner-sheet.png",
+	"format": "RGBA8888",
+	"size": {"w":128,"h":256},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:9e36e37c60b16cff187a51b7656a2567:b2cb3de9aeafa572c48a90b0e056b6df:1d72095f778ed52903308d34dff140d7$"
+}
+}
