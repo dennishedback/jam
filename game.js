@@ -279,6 +279,7 @@ Game.Play.prototype =
             }
         }
 		if (this.generatedTerrain - this.player.position.x < 500) {
+			this.world.setBounds(0,0,this.generatedTerrain + 1000, 400);
 			this.generatedTerrain += 500;
 			this.genTerrain(this.generatedTerrain);
 			if (this.terrainSegment.length > 3)
