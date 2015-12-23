@@ -115,7 +115,7 @@ Game.Play.prototype =
 
     genTerrain: function(distance)
     {
-        this.terrainSegment.push(game.add.sprite(distance, 330, 'empty'));
+        this.terrainSegment.push(game.add.sprite(distance, 330));
 
         this.game.physics.p2.enableBody(
             this.terrainSegment[this.terrainSegment.length - 1],
@@ -125,169 +125,218 @@ Game.Play.prototype =
         this.terrainSegment[this.terrainSegment.length - 1].body.clearShapes();
         this.terrainSegment[this.terrainSegment.length - 1].body.static = true;
 
-        var terrain = [[0, 100]];
+        var terrain = [];
         this.noise.setAmplitude(100);
         this.noise.setScale(0.01);
 
-        for (var i = 0; i <= 0 + 500.0; i = i+50.0) {
+        for (var i = 0; i <= 500.0; i = i+(500/3.0)) {
             var height = this.noise.getVal(distance + i);
             var x = i;
             terrain.push([x, -height]);
+			console.log(i);
         }
 
-        terrain.push([500, 100]);
-        var graphics = game.add.graphics(distance, 330);
+		var beziered = [];
 
-        graphics.lineWidth = 0;
-        graphics.beginFill(0x666666);
+		for (var i = 0, detail = 10; i <= detail; i++)
+		{
+			var vertex;
+			if (i == 0 && this.terrainSegment.length > 1 && false)
+			{
+				vertex = this.Bezier((1.0/detail) * i, 
+						terrain[0], 
+						this.previousControlPoints[0],
+						this.previousControlPoints[1],
+						terrain[3]); 
+				console.log(vertex);
+			} 
+			else
+			{	
+				vertex = this.Bezier((1.0/detail) * i, 
+						terrain[0], 
+						terrain[1], 
+						terrain[2], 
+						terrain[3]); 
+			}
 
-        graphics.moveTo(distance, 200);
+			if (i == detail)
+			{
+				this.previousControlPoints = [terrain[1], terrain[3]];
+			}
+			console.log(vertex);
+			beziered.push(vertex);
+		}
 
-        terrain.forEach(function(vertex) {
-            graphics.lineTo(vertex[0], vertex[1]);
-        });
+		terrain = [[0, 100]].concat(beziered.reverse().concat([[500,100]]));
+		console.table(terrain);
+		var graphics = game.add.graphics(distance, 330);
 
-        graphics.endFill();
+		graphics.lineWidth = 0;
+		graphics.beginFill(0x666666);
 
-        window.graphics = graphics;
-        this.terrainSegment[this.terrainSegment.length - 1].body.addPolygon( {}, terrain);
-    },
+		graphics.moveTo(distance, 200);
 
-    create: function()
-    {
-        this.loading_text.destroy(true);
-        this.game.camera.roundPx = false;
-        this.game.stage.backgroundColor = '#ffffff';
-        this.game.physics.startSystem(Phaser.Physics.P2JS);
-        this.game.physics.p2.gravity.y = 1500;
+		terrain.forEach(function(vertex) {
+			graphics.lineTo(vertex[0], vertex[1]);
+		});
+
+		graphics.endFill();
+
+		window.graphics = graphics;
+		this.terrainSegment[this.terrainSegment.length - 1].body.addPolygon( {}, terrain);
+	},
+
+	create: function()
+	{
+		this.loading_text.destroy(true);
+		this.game.camera.roundPx = false;
+		this.game.stage.backgroundColor = '#ffffff';
+		this.game.physics.startSystem(Phaser.Physics.P2JS);
+		this.game.physics.p2.gravity.y = 1500;
 		this.generatedTerrain = 0;
 
-        // Prevents menu popping up on mouse2 down
-        this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
+		// Prevents menu popping up on mouse2 down
+		this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
 
-        this.terrainSegment = [];
+		this.terrainSegment = [];
 
-        //this.splash = this.add.audio('splash2');
-        function Perlin1D() {
-            var MAX_VERTICES = 256;
-            var MAX_VERTICES_MASK = MAX_VERTICES -1;
-            var amplitude = 1;
-            var scale = 1;
+		//this.splash = this.add.audio('splash2');
+		function Perlin1D() {
+			var MAX_VERTICES = 256;
+			var MAX_VERTICES_MASK = MAX_VERTICES -1;
+			var amplitude = 1;
+			var scale = 1;
 
-            var r = [];
+			var r = [];
 
-            for ( var i = 0; i < MAX_VERTICES; ++i ) {
-                r.push(Math.random());
-            }
+			for ( var i = 0; i < MAX_VERTICES; ++i ) {
+				r.push(Math.random());
+			}
 
-            var getVal = function( x ){
-                var scaledX = x * scale;
-                var xFloor = Math.floor(scaledX);
-                var t = scaledX - xFloor;
-                var tRemapSmoothstep = t * t * ( 3 - 2 * t );
+			var getVal = function( x ){
+				var scaledX = x * scale;
+				var xFloor = Math.floor(scaledX);
+				var t = scaledX - xFloor;
+				var tRemapSmoothstep = t * t * ( 3 - 2 * t );
 
-                /// Modulo using &
-                var xMin = xFloor & MAX_VERTICES_MASK;
-                var xMax = ( xMin + 1 ) & MAX_VERTICES_MASK;
+				/// Modulo using &
+				var xMin = xFloor & MAX_VERTICES_MASK;
+				var xMax = ( xMin + 1 ) & MAX_VERTICES_MASK;
 
-                var y = lerp( r[ xMin ], r[ xMax ], tRemapSmoothstep );
+				var y = lerp( r[ xMin ], r[ xMax ], tRemapSmoothstep );
 
-                return y * amplitude;
-            };
+				return y * amplitude;
+			};
 
-            var lerp = function(a, b, t ) {
-                return a * ( 1 - t ) + b * t;
-            };
+			var lerp = function(a, b, t ) {
+				return a * ( 1 - t ) + b * t;
+			};
 
-            return {
-                getVal: getVal,
-                setAmplitude: function(newAmplitude) {
-                    amplitude = newAmplitude;
-                },
-                setScale: function(newScale) {
-                    scale = newScale;
-                }
-            };
-        };
+			return {
+				getVal: getVal,
+				setAmplitude: function(newAmplitude) {
+					amplitude = newAmplitude;
+				},
+				setScale: function(newScale) {
+					scale = newScale;
+				}
+			};
+		};
 
-        this.noise = Perlin1D();
+		this.noise = Perlin1D();
 
-        this.world.setBounds(0,0,10000, 400);
+		function B1(t) { return t*t*t }
+		function B2(t) { return 3*t*t*(1-t) }
+		function B3(t) { return 3*t*(1-t)*(1-t) }
+		function B4(t) { return (1-t)*(1-t)*(1-t) }
 
-        this.player = this.game.add.sprite(10,10, 'grisrunner');
+		this.Bezier = function Bezier(percent,C1,C2,C3,C4) {
+			return [C1[0]*B1(percent) + C2[0]*B2(percent) + C3[0]*B3(percent) + C4[0]*B4(percent),
+			C1[1]*B1(percent) + C2[1]*B2(percent) + C3[1]*B3(percent) + C4[1]*B4(percent)];
+		}
 
-        this.player.anchor.setTo(0.5);
+		this.world.setBounds(0,0,10000, 400);
 
-        //this.player.animations.add('left', ['iceman-left-1.png', 'iceman-left-2.png'], 5, true);
-        //this.player.animations.add('right', ['iceman-right-1.png', 'iceman-right-2.png'], 5, true);
-        //this.player.animations.add('back', ['iceman-back-1.png', 'iceman-back-2.png'], 5, true);
-        //this.player.animations.add('front', ['iceman-front-1.png', 'iceman-front-2.png'], 5, true);
-        //this.player.animations.play('front');
-        this.game.physics.p2.enableBody(this.player, false);
+		this.player = this.game.add.sprite(10,10, 'grisrunner');
 
-        this.game.camera.follow(this.player);
 
-        //move player with cursor keys
-        this.cursors = this.game.input.keyboard.createCursorKeys();
+		this.player.anchor.setTo(0.5);
 
-        /*
-           pcp = game.add.audio('pcp');
+		//this.player.animations.add('left', ['iceman-left-1.png', 'iceman-left-2.png'], 5, true);
+		//this.player.animations.add('right', ['iceman-right-1.png', 'iceman-right-2.png'], 5, true);
+		//this.player.animations.add('back', ['iceman-back-1.png', 'iceman-back-2.png'], 5, true);
+		//this.player.animations.add('front', ['iceman-front-1.png', 'iceman-front-2.png'], 5, true);
+		//this.player.animations.play('front');
+		this.game.physics.p2.enableBody(this.player, false);
 
-           function start() {
-           if (!playing)
-           pcp.loopFull(0.6);
-           playing = true;
-           }
+		//this.player.body.fixedRotation = true;
+		//
+		this.terrainCollisionGroup = game.add.group();
 
-           game.sound.setDecodedCallback(pcp, start, this);
-        */
-		this.genTerrain(0);
-    },
+		this.game.camera.follow(this.player);
 
-    shutdown: function()
-    {
-	  /*
-		 shake = new Phaser.Plugin.Shake(game);
-		 game.plugins.add(shake);
-		 */
+		//move player with cursor keys
+		this.cursors = this.game.input.keyboard.createCursorKeys();
 
-        this.splash.destroy(true);
-        this.map.destroy(true);
-        this.backgroundLayer.destroy(true);
-        //this.blockedLayer.destroy(true);
-        //this.world.destroy(true);
-        tankers.destroy(true);
-        text.destroy(true);
-        this.player.destroy(true);
-        StandingInWaterFilter.destroy(true);
-        //pcp.destroy(true);
-    },
+		/*
+		   pcp = game.add.audio('pcp');
 
-    update: function()
-    {
-        const BASE_VELOCITY = 400;
+		   function start() {
+		   if (!playing)
+		   pcp.loopFull(0.6);
+		   playing = true;
+		   }
 
-        if (this.player.body) {
+		   game.sound.setDecodedCallback(pcp, start, this);
+		   */
+				this.genTerrain(0);
+	},
 
-            if (this.player.body.velocity.x < BASE_VELOCITY) {
-                this.player.body.velocity.x = BASE_VELOCITY;
-            }
+	shutdown: function()
+	{
+		/*
+		   shake = new Phaser.Plugin.Shake(game);
+		   game.plugins.add(shake);
+		   */
 
-            if (this.input.activePointer.leftButton.isDown) {
-                this.player.body.velocity.y -= 100;
-                this.game.sound.play("jump");
-            }
+		this.splash.destroy(true);
+		this.map.destroy(true);
+		this.backgroundLayer.destroy(true);
+		//this.blockedLayer.destroy(true);
+		//this.world.destroy(true);
+		text.destroy(true);
+		this.player.destroy(true);
+		StandingInWaterFilter.destroy(true);
+		//pcp.destroy(true);
+	},
 
-            if (this.input.activePointer.rightButton.isDown) {
-                this.player.body.velocity.x += 100;
-                this.game.sound.play("fart");
-            }
-        }
-		if (this.generatedTerrain - this.player.position.x < 500) {
-			this.world.setBounds(0,0,this.generatedTerrain + 1000, 400);
-			this.generatedTerrain += 500;
+	update: function()
+	{
+		const BASE_VELOCITY = 400;
+
+		if (this.player.body) {
+
+			if (this.player.body.velocity.x < BASE_VELOCITY) {
+				this.player.body.velocity.x = BASE_VELOCITY;
+			}
+
+			if (this.input.activePointer.leftButton.isDown) {
+				this.player.body.velocity.y -= 100;
+				this.game.sound.play("jump");
+			}
+
+			if (this.input.activePointer.rightButton.isDown) {
+				this.player.body.velocity.x += 100;
+				this.game.sound.play("fart");
+			}
+		}
+		var t = 100, terrainLength = 500, terrainBuffer = 200;
+		if (this.generatedTerrain - this.player.position.x  < terrainLength) {
+			console.log("d", this.player.position.x, this.player.body.velocity.x);
+			this.generatedTerrain += terrainLength;
+			this.world.setBounds(0,0,this.generatedTerrain, 400);
 			this.genTerrain(this.generatedTerrain);
-			if (this.terrainSegment.length > 3)
+			while (this.terrainSegment.length > 10)
 			{
 				this.terrainSegment[0].destroy();
 				this.terrainSegment.shift();
