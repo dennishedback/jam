@@ -131,7 +131,7 @@ Game.Play.prototype =
 		this.noise.setAmplitude(100);
 		this.noise.setScale(0.01);
 
-		for (var i = 0; i <= 500.0; i = i+(500/6.0))
+		for (var i = 0, segments = 3.0; i <= this.terrainLength; i = i+(this.terrainLength/segments))
 		{
 			var height = this.noise.getVal(distance + i);
 			var x = i;
@@ -144,12 +144,14 @@ Game.Play.prototype =
 			if (i && !(i % 2) && i + 1 != terrain.length)
 			{
 				interpolation.push([(terrain[i][0] + terrain[i+1][0])/2, (terrain[i][1] + terrain[i+1][1])/2]);
-				console.log(i, terrain.length);
+				//console.log(i, terrain.length);
 			}
 		}
 
+		/*
 		console.table(terrain);
 		console.table(interpolation);
+		*/
 		terrain = terrain.concat(interpolation).sort(function(p1, p2) { return p1[0] > p2[0]; });
 		console.table(terrain);
 
@@ -163,12 +165,12 @@ Game.Play.prototype =
 					terrain[0], 
 					terrain[1], 
 					terrain[2], 
-					terrain[8]); 
+					terrain[4]); 
 
 			beziered.push(vertex);
 		}
 
-		terrain = [[0, 100]].concat(beziered.reverse().concat([[500,100]]));
+		terrain = [[0, 100]].concat(beziered.reverse().concat([[this.terrainLength,100]]));
 		//console.table(terrain);
 		var graphics = game.add.graphics(distance, 330);
 
@@ -193,6 +195,9 @@ Game.Play.prototype =
 		this.game.camera.roundPx = false;
 		this.game.stage.backgroundColor = '#ffffff';
 		this.game.physics.startSystem(Phaser.Physics.P2JS);
+		this.game.physics.p2.setImpactEvents(true);
+
+
 		this.game.physics.p2.gravity.y = 1500;
 		this.generatedTerrain = 0;
 
@@ -273,6 +278,8 @@ Game.Play.prototype =
 		//this.player.body.fixedRotation = true;
 		//
 		this.terrainCollisionGroup = game.add.group();
+	
+		this.terrainLength = 750;
 
 		this.game.camera.follow(this.player);
 
@@ -331,10 +338,10 @@ Game.Play.prototype =
 				this.game.sound.play("fart");
 			}
 		}
-		var t = 100, terrainLength = 500, terrainBuffer = 200;
-		if (this.generatedTerrain - this.player.position.x  < terrainLength) {
-			console.log("d", this.player.position.x, this.player.body.velocity.x);
-			this.generatedTerrain += terrainLength;
+		var t = 100, terrainBuffer = 200;
+		if (this.generatedTerrain - this.player.position.x  < this.terrainLength) {
+			//console.log("d", this.player.position.x, this.player.body.velocity.x);
+			this.generatedTerrain += this.terrainLength;
 			this.world.setBounds(0,0,this.generatedTerrain, 400);
 			this.genTerrain(this.generatedTerrain);
 			while (this.terrainSegment.length > 10)
