@@ -51,15 +51,15 @@ Game.Intro.prototype =
         );
 
         tween.onComplete.add(function() {
+        });
             var text = this.game.add.text(
                 game.world.centerX,
                 158,
-                "The objective is to run as far as possible\n Press SPACE to start",
-                {fill: "#000000", align:"center"}
+                "MOUSE1 MOUSE2 = JUMP, CONSUME POWERUP\ANY KEY TO START",
+                {font: "10px Arial", fill: "#000000", align:"center"}
             );
-            text.anchor.setTo(0.5);
             text.alpha = 1.0;
-        });
+			text.anchor.setTo(0.5);
 
         //intro_track = this.game.add.audio('intro');
 
@@ -69,106 +69,107 @@ Game.Intro.prototype =
                 intro_track.loopFull(0.6)
             },
             this
-        );*/
+			);*/
+		this.game.input.mouse.mouseDownCallback = function(e) {
+				//intro_track.stop();
+				this.game.state.start("Play", true, false);
+		}.bind(this);
+		this.game.input.keyboard.onDownCallback = function(e) {
+				//intro_track.stop();
+				this.game.state.start("Play", true, false);
+		}.bind(this);
 
-    },
+	},
 
-    update: function() {
-        this.game.input.keyboard.onDownCallback = function(e) {
-            if (e.keyCode == 32) {
-                this.game.input.keyboard.onDownCallback = function(e) {
-                    if (e.keyCode == 82) {
-                        numberOfTankers = 0;
-                        this.game.state.restart(false, true);
-                    }
-                }
-                //intro_track.stop();
-                this.game.state.start("Play", true, false);
-            }
-        }
-    },
+	update: function() 
+	{
+	},
+	shutdown: function shutdown()
+	{
+		this.game.input.mouse.mouseDownCallback = null;
+		this.game.input.keyboard.onDownCallback = null;
+	}
 };
 
 var playing = false;
 
 Game.Play.prototype =
 {
-    preload: function()
-    {
-        this.loading_text = this.game.add.text(
-            game.world.centerX,
-            game.world.centerY,
-            "loading...",
-            {fill: "#ffffff"}
-        );
+	preload: function()
+	{
+		this.loading_text = this.game.add.text(
+				game.world.centerX,
+				game.world.centerY,
+				"loading...",
+				{fill: "#ffffff"}
+				);
 
-        this.loading_text.anchor.setTo(0.5);
+		this.loading_text.anchor.setTo(0.5);
 
-        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        this.scale.pageAlignHorizontally = true;
-        this.scale.pageAlignVertically = true;
-        game.stage.smoothed = false;
+		this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+		this.scale.pageAlignHorizontally = true;
+		this.scale.pageAlignVertically = true;
+		game.stage.smoothed = false;
 
-        //this.load.audio('splash2', '../assets/splash2.mp3');
-        //this.load.audio('pcp', '../assets/pcp.mp3');
-    },
+		//this.load.audio('splash2', '../assets/splash2.mp3');
+		//this.load.audio('pcp', '../assets/pcp.mp3');
+	},
 
-    genTerrain: function(distance)
-    {
-        this.terrainSegment.push(game.add.sprite(distance, 330));
+	genTerrain: function(distance)
+	{
+		this.terrainSegment.push(game.add.sprite(distance, 330));
 
-        this.game.physics.p2.enableBody(
-            this.terrainSegment[this.terrainSegment.length - 1],
-            false
-        );
+		this.game.physics.p2.enableBody(
+				this.terrainSegment[this.terrainSegment.length - 1],
+				false
+				);
 
-        this.terrainSegment[this.terrainSegment.length - 1].body.clearShapes();
-        this.terrainSegment[this.terrainSegment.length - 1].body.static = true;
+		this.terrainSegment[this.terrainSegment.length - 1].body.clearShapes();
+		this.terrainSegment[this.terrainSegment.length - 1].body.static = true;
 
-        var terrain = [];
-        this.noise.setAmplitude(100);
-        this.noise.setScale(0.01);
+		var terrain = [];
+		this.noise.setAmplitude(100);
+		this.noise.setScale(0.01);
 
-        for (var i = 0; i <= 500.0; i = i+(500/3.0)) {
-            var height = this.noise.getVal(distance + i);
-            var x = i;
-            terrain.push([x, -height]);
-			console.log(i);
-        }
+		for (var i = 0; i <= 500.0; i = i+(500/6.0))
+		{
+			var height = this.noise.getVal(distance + i);
+			var x = i;
+			terrain.push([x, -height]);
+		}
+
+		var interpolation = [];
+		for (var i = 0; i < terrain.length; i++)
+		{
+			if (i && !(i % 2) && i + 1 != terrain.length)
+			{
+				interpolation.push([(terrain[i][0] + terrain[i+1][0])/2, (terrain[i][1] + terrain[i+1][1])/2]);
+				console.log(i, terrain.length);
+			}
+		}
+
+		console.table(terrain);
+		console.table(interpolation);
+		terrain = terrain.concat(interpolation).sort(function(p1, p2) { return p1[0] > p2[0]; });
+		console.table(terrain);
+
 
 		var beziered = [];
 
-		for (var i = 0, detail = 10; i <= detail; i++)
+		for (var i = 0, detail = 15; i <= detail; i++)
 		{
 			var vertex;
-			if (i == 0 && this.terrainSegment.length > 1 && false)
-			{
-				vertex = this.Bezier((1.0/detail) * i, 
-						terrain[0], 
-						this.previousControlPoints[0],
-						this.previousControlPoints[1],
-						terrain[3]); 
-				console.log(vertex);
-			} 
-			else
-			{	
-				vertex = this.Bezier((1.0/detail) * i, 
-						terrain[0], 
-						terrain[1], 
-						terrain[2], 
-						terrain[3]); 
-			}
+			vertex = this.Bezier((1.0/detail) * i, 
+					terrain[0], 
+					terrain[1], 
+					terrain[2], 
+					terrain[8]); 
 
-			if (i == detail)
-			{
-				this.previousControlPoints = [terrain[1], terrain[3]];
-			}
-			console.log(vertex);
 			beziered.push(vertex);
 		}
 
 		terrain = [[0, 100]].concat(beziered.reverse().concat([[500,100]]));
-		console.table(terrain);
+		//console.table(terrain);
 		var graphics = game.add.graphics(distance, 330);
 
 		graphics.lineWidth = 0;
